@@ -1,0 +1,203 @@
+{
+  "meta": {
+    "fecha_utc": "2026-11-05T16:20:57+00:00",
+    "modelo": "gemini-flash-lite-latest",
+    "recursion_limit": 10,
+    "threads": {
+      "demo": "demo-3d0732",
+      "error": "error-3d0732"
+    }
+  },
+  "escenarios": {
+    "1_multi_paso": {
+      "thread_id": "demo-3d0732",
+      "llamadas_a_herramientas": [
+        "buscar_cliente_por_nombre",
+        "buscar_pedidos"
+      ],
+      "pasos": [
+        {
+          "tipo": "HumanMessage",
+          "contenido": "¿Cuántos pedidos tuvo Ana García y cuál fue el total?"
+        },
+        {
+          "tipo": "AIMessage",
+          "contenido": "",
+          "tool_calls": [
+            {
+              "herramienta": "buscar_cliente_por_nombre",
+              "argumentos": {
+                "nombre": "Ana García"
+              }
+            }
+          ]
+        },
+        {
+          "tipo": "ToolMessage",
+          "contenido": "Cliente encontrado: 'Ana García' -> cliente_id=102",
+          "herramienta": "buscar_cliente_por_nombre"
+        },
+        {
+          "tipo": "AIMessage",
+          "contenido": "",
+          "tool_calls": [
+            {
+              "herramienta": "buscar_pedidos",
+              "argumentos": {
+                "cliente_id": 102
+              }
+            }
+          ]
+        },
+        {
+          "tipo": "ToolMessage",
+          "contenido": "cliente_id=102: pedidos=3, total=$14500",
+          "herramienta": "buscar_pedidos"
+        },
+        {
+          "tipo": "AIMessage",
+          "contenido": "Ana García tuvo 3 pedidos y el monto total gastado fue de $14,500."
+        }
+      ]
+    },
+    "2_memoria_mismo_thread": {
+      "thread_id": "demo-3d0732",
+      "llamadas_a_herramientas": [
+        "buscar_cliente_por_nombre",
+        "buscar_pedidos"
+      ],
+      "pasos": [
+        {
+          "tipo": "HumanMessage",
+          "contenido": "¿Y Juan Pérez?"
+        },
+        {
+          "tipo": "AIMessage",
+          "contenido": "",
+          "tool_calls": [
+            {
+              "herramienta": "buscar_cliente_por_nombre",
+              "argumentos": {
+                "nombre": "Juan Pérez"
+              }
+            }
+          ]
+        },
+        {
+          "tipo": "ToolMessage",
+          "contenido": "Cliente encontrado: 'Juan Pérez' -> cliente_id=205",
+          "herramienta": "buscar_cliente_por_nombre"
+        },
+        {
+          "tipo": "AIMessage",
+          "contenido": "",
+          "tool_calls": [
+            {
+              "herramienta": "buscar_pedidos",
+              "argumentos": {
+                "cliente_id": 205
+              }
+            }
+          ]
+        },
+        {
+          "tipo": "ToolMessage",
+          "contenido": "cliente_id=205: pedidos=1, total=$3200",
+          "herramienta": "buscar_pedidos"
+        },
+        {
+          "tipo": "AIMessage",
+          "contenido": "Juan Pérez tuvo 1 pedido y el monto total gastado fue de $3,200."
+        }
+      ]
+    },
+    "3_recuerda_contexto": {
+      "thread_id": "demo-3d0732",
+      "llamadas_a_herramientas": [
+        "buscar_cliente_por_nombre",
+        "buscar_ultimo_pedido"
+      ],
+      "pasos": [
+        {
+          "tipo": "HumanMessage",
+          "contenido": "Volviendo a Ana García: ¿cuál fue su último pedido?"
+        },
+        {
+          "tipo": "AIMessage",
+          "contenido": "",
+          "tool_calls": [
+            {
+              "herramienta": "buscar_cliente_por_nombre",
+              "argumentos": {
+                "nombre": "Ana García"
+              }
+            }
+          ]
+        },
+        {
+          "tipo": "ToolMessage",
+          "contenido": "Cliente encontrado: 'Ana García' -> cliente_id=102",
+          "herramienta": "buscar_cliente_por_nombre"
+        },
+        {
+          "tipo": "AIMessage",
+          "contenido": "",
+          "tool_calls": [
+            {
+              "herramienta": "buscar_ultimo_pedido",
+              "argumentos": {
+                "cliente_id": 102
+              }
+            }
+          ]
+        },
+        {
+          "tipo": "ToolMessage",
+          "contenido": "cliente_id=102: último pedido P-1003 del 2026-10-21 por $5000",
+          "herramienta": "buscar_ultimo_pedido"
+        },
+        {
+          "tipo": "AIMessage",
+          "contenido": "El último pedido de Ana García fue el P-1003, realizado el 21 de octubre de 2026, por un monto de $5,000."
+        }
+      ]
+    },
+    "4_error_y_aclaracion": {
+      "thread_id": "error-3d0732",
+      "llamadas_a_herramientas": [
+        "buscar_cliente_por_nombre"
+      ],
+      "pasos": [
+        {
+          "tipo": "HumanMessage",
+          "contenido": "¿Cuántos pedidos tuvo el cliente Roberto Sánchez?"
+        },
+        {
+          "tipo": "AIMessage",
+          "contenido": "",
+          "tool_calls": [
+            {
+              "herramienta": "buscar_cliente_por_nombre",
+              "argumentos": {
+                "nombre": "Roberto Sánchez"
+              }
+            }
+          ]
+        },
+        {
+          "tipo": "ToolMessage",
+          "contenido": "ERROR: no se encontró ningún cliente con el nombre 'Roberto Sánchez'. Verificá que el nombre esté completo y bien escrito.",
+          "herramienta": "buscar_cliente_por_nombre"
+        },
+        {
+          "tipo": "AIMessage",
+          "contenido": "No se encontró ningún cliente registrado con el nombre \"Roberto Sánchez\". ¿Podrías verificar si está bien escrito o confirmar el nombre completo?"
+        }
+      ]
+    }
+  },
+  "persistencia": {
+    "thread_id": "demo-3d0732",
+    "mensajes_recuperados": 18
+  }
+}
